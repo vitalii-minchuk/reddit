@@ -1,9 +1,10 @@
-import { ChangeEvent, FC, useState } from "react"
-
+import { ChangeEvent, FC, FormEvent, useState } from "react";
 import { Button, Flex, Input, Text } from "@chakra-ui/react";
-
 import { useSetRecoilState } from "recoil";
 import { authModalState } from "../../../atoms/authModalAtom";
+import { useCreateUserWithEmailAndPassword } from "react-firebase-hooks/auth";
+import { auth } from "../../../firebase/clientApp";
+import { FIREBASE_ERRORS } from "../../../firebase/errors";
 
 const SignUp: FC = () => {
   const setAuthModalState = useSetRecoilState(authModalState);
@@ -12,6 +13,9 @@ const SignUp: FC = () => {
     password: "",
     confirmPassword: "",
   });
+  const [error, setError] = useState("");
+  const [createUserWithEmailAndPassword, user, loading, userError] =
+    useCreateUserWithEmailAndPassword(auth);
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>): void => {
     setSignUpForm((prev) => ({
@@ -20,7 +24,15 @@ const SignUp: FC = () => {
     }));
   };
 
-  const handleSubmit = (): void => {};
+  const handleSubmit = (event: FormEvent<HTMLFormElement>): void => {
+    event.preventDefault();
+    setError("");
+    if (signUpForm.password !== signUpForm.confirmPassword) {
+      setError("Password do not match");
+      return;
+    }
+    createUserWithEmailAndPassword(signUpForm.email, signUpForm.password);
+  };
 
   return (
     <form onSubmit={handleSubmit} autoComplete="off">
@@ -28,7 +40,7 @@ const SignUp: FC = () => {
         required
         mb={2}
         name="email"
-        placeholder="Name"
+        placeholder="Email"
         type="email"
         onChange={handleChange}
         fontSize="10pt"
@@ -90,7 +102,10 @@ const SignUp: FC = () => {
         }}
         bg="gray.50"
       />
-      <Button my={2} h="36px" w="100%" type="submit">
+      <Text fontSize="9pt" textAlign="center" color="red.500">
+        {error || FIREBASE_ERRORS[userError?.message as keyof typeof FIREBASE_ERRORS]}
+      </Text>
+      <Button isLoading={loading} my={2} h="36px" w="100%" type="submit">
         Sign Up
       </Button>
       <Flex fontSize="9pt" justify="center">
@@ -99,7 +114,7 @@ const SignUp: FC = () => {
           onClick={() =>
             setAuthModalState((prev) => ({
               ...prev,
-              view: "signIn"
+              view: "signIn",
             }))
           }
           color="blue.500"
@@ -108,12 +123,9 @@ const SignUp: FC = () => {
         >
           SIGN IN
         </Text>
-        <Text></Text>
-        <Text></Text>
-        <Text></Text>
       </Flex>
     </form>
   );
-}
+};
 
-export default SignUp
+export default SignUp;

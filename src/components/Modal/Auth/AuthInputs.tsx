@@ -1,7 +1,5 @@
 import { FC } from "react";
-
 import { Flex } from "@chakra-ui/react";
-
 import { useRecoilValue } from "recoil";
 import { authModalState } from "../../../atoms/authModalAtom";
 import SignIn from "./SignIn";
