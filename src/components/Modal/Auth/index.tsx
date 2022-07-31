@@ -15,6 +15,7 @@ import AuthInputs from "./AuthInputs";
 import OAuthButton from "./OAuthButton";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "../../../firebase/clientApp";
+import ResetPassword from "./ResetPassword";
 
 const AuthModal: FC = () => {
   const [modalState, setModalState] = useRecoilState(authModalState);
@@ -49,16 +50,18 @@ const AuthModal: FC = () => {
             alignItems="center"
             pb={6}
           >
-            <Flex
-              w="70%"
-              align="center"
-              justify="center"
-              direction="column"
-            >
-              <OAuthButton />
-              <Text color="gray.500" fontSize="10pt" fontWeight={700}>OR</Text>
-              <AuthInputs />
-              {/* <ResetPassword /> */}
+            <Flex w="70%" align="center" justify="center" direction="column">
+              {modalState.view === "signIn" || modalState.view === "signUp" ? (
+                <>
+                  <OAuthButton />
+                  <Text color="gray.500" fontSize="10pt" fontWeight={700}>
+                    OR
+                  </Text>
+                  <AuthInputs />
+                </>
+              ) : (
+                <ResetPassword />
+              )}
             </Flex>
           </ModalBody>
         </ModalContent>

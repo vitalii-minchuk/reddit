@@ -12,12 +12,9 @@ const SignIn: FC = () => {
     email: "",
     password: "",
   });
-  const [
-    signInWithEmailAndPassword,
-    user,
-    loading,
-    error,
-  ] = useSignInWithEmailAndPassword(auth);
+  const [formError, setFormError] = useState("");
+  const [signInWithEmailAndPassword, user, loading, error] =
+    useSignInWithEmailAndPassword(auth);
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>): void => {
     setLoginForm((prev) => ({
@@ -28,6 +25,10 @@ const SignIn: FC = () => {
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>): void => {
     event.preventDefault();
+    if (formError) setFormError("");
+    if (!loginForm.email.includes("@")) {
+      return setFormError("Please enter a valid email");
+    }
     signInWithEmailAndPassword(loginForm.email, loginForm.password);
   };
 
@@ -78,11 +79,29 @@ const SignIn: FC = () => {
         bg="gray.50"
       />
       <Text fontSize="9pt" textAlign="center" color="red.500">
-        {FIREBASE_ERRORS[error?.message as keyof typeof FIREBASE_ERRORS]}
+        {formError || FIREBASE_ERRORS[error?.message as keyof typeof FIREBASE_ERRORS]}
       </Text>
       <Button isLoading={loading} my={2} h="36px" w="100%" type="submit">
         Sign in
       </Button>
+      <Flex justify="center" mb={2}>
+        <Text fontSize="9pt" mr={1}>
+          Forgot your password?
+        </Text>
+        <Text
+          fontSize="9pt"
+          color="blue.500"
+          cursor="pointer"
+          onClick={() =>
+            setAuthModalState((prev) => ({
+              ...prev,
+              view: "resetPassword",
+            }))
+          }
+        >
+          Reset
+        </Text>
+      </Flex>
       <Flex fontSize="9pt" justify="center">
         <Text mr={1}>New here?</Text>
         <Text

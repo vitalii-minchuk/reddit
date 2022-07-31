@@ -13,7 +13,7 @@ const SignUp: FC = () => {
     password: "",
     confirmPassword: "",
   });
-  const [error, setError] = useState("");
+  const [formError, setFormError] = useState("");
   const [createUserWithEmailAndPassword, user, loading, userError] =
     useCreateUserWithEmailAndPassword(auth);
 
@@ -26,10 +26,12 @@ const SignUp: FC = () => {
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>): void => {
     event.preventDefault();
-    setError("");
+    if (formError) setFormError("");
+    if (!signUpForm.email.includes("@")) {
+      return setFormError("Please enter a valid email");
+    }
     if (signUpForm.password !== signUpForm.confirmPassword) {
-      setError("Password do not match");
-      return;
+      return setFormError("Passwords do not match");
     }
     createUserWithEmailAndPassword(signUpForm.email, signUpForm.password);
   };
@@ -103,7 +105,8 @@ const SignUp: FC = () => {
         bg="gray.50"
       />
       <Text fontSize="9pt" textAlign="center" color="red.500">
-        {error || FIREBASE_ERRORS[userError?.message as keyof typeof FIREBASE_ERRORS]}
+        {formError ||
+          FIREBASE_ERRORS[userError?.message as keyof typeof FIREBASE_ERRORS]}
       </Text>
       <Button isLoading={loading} my={2} h="36px" w="100%" type="submit">
         Sign Up
