@@ -1,18 +1,23 @@
 import { FC } from "react";
 import { SearchIcon } from "@chakra-ui/icons";
 import { Flex, Input, InputGroup, InputLeftElement } from "@chakra-ui/react";
+import { User } from "firebase/auth";
 
-const SearchInput: FC = () => {
+interface ISearchInputProps {
+  user: User
+}
+
+const SearchInput: FC<ISearchInputProps> = ({ user }) => {
   return (
-    <Flex grow={1} align="center">
+    <Flex grow={1} maxW={user ? "auto" : "600px"} align="center">
       <InputGroup>
         <InputLeftElement pointerEvents="none">
-          <SearchIcon color="gray.400" mb={1} />
+          <SearchIcon color="gray.400" mb={1} ml={2} />
         </InputLeftElement>
         <Input
           mx={2}
           placeholder="Search Reddit"
-          fontSize="10pt"
+          fontSize={{base: "9pt", sm:"10pt"}}
           height="34px"
           bg="gray.50"
           border="1px solid"

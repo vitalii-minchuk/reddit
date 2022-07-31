@@ -11,9 +11,9 @@ const Navbar: FC = () => {
   const [user, loading, error] = useAuthState(auth);
 
   return (
-    <Flex bg="white" h="44px" p="6px 12px">
-      <Flex align="center">
-        <Image h="30px" src="/images/redditFace.svg" alt="reddit face" />
+    <Flex bg="white" h="44px" p="6px 12px" justify="space-between">
+      <Flex align="center" minW="24px" mr={{base: 1, md: 2}}>
+        <Image h="24px"  src="/images/redditFace.svg" alt="reddit face" />
         <Image
           h="46px"
           src="/images/redditText.svg"
@@ -21,8 +21,8 @@ const Navbar: FC = () => {
           display={{ base: "none", md: "unset" }}
         />
       </Flex>
-      <Directory user={user as User} />
-      <SearchInput />
+      {user && <Directory />}
+      <SearchInput user={user as User} />
       <RightContent user={user as User} />
     </Flex>
   );
