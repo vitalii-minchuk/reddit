@@ -20,7 +20,13 @@ import {
 } from "@chakra-ui/react";
 import { BsFillEyeFill, BsFillPersonFill } from "react-icons/bs";
 import { HiLockClosed } from "react-icons/hi";
-import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
+import {
+  doc,
+  getDoc,
+  runTransaction,
+  serverTimestamp,
+  setDoc,
+} from "firebase/firestore";
 import { auth, firestore } from "../../../firebase/clientApp";
 import { useAuthState } from "react-firebase-hooks/auth";
 
@@ -44,7 +50,7 @@ const CreateCommunityModal: FC<ICreateCommunityModalProps> = ({
   const [communityType, setCommunityType] = useState(ComType.public);
   const [charsRemaining, setCharsRemaining] = useState(21);
   const [nameError, setNameError] = useState("");
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     setCommunityName("");
@@ -71,28 +77,35 @@ const CreateCommunityModal: FC<ICreateCommunityModalProps> = ({
         "Community names must be between 3–21 characters, and can only contain letters, numbers, or underscores."
       );
     }
-    setLoading(true)
+    setLoading(true);
     try {
       const communityDocRef = doc(firestore, "communities", communityName);
-      const communityDoc = await getDoc(communityDocRef);
-      if (communityDoc.exists()) {
-        throw new Error(`Sorry, /r${communityName} is taken. Try another.`)
-      }
-      await setDoc(communityDocRef, {
-        creatorId: user?.uid,
-        createdAt: serverTimestamp(),
-        numberOfMembers: 1,
-        privacyType: communityType,
+      await runTransaction(firestore, async (transaction) => {
+        const communityDoc = await transaction.get(communityDocRef);
+        if (communityDoc.exists()) {
+          throw new Error(`Sorry, /r${communityName} is taken. Try another.`);
+        }
+        transaction.set(communityDocRef, {
+          creatorId: user?.uid,
+          createdAt: serverTimestamp(),
+          numberOfMembers: 1,
+          privacyType: communityType,
+        });
+        transaction.set(
+          doc(firestore, `users/${user?.uid}/communitySnippets`, communityName),
+          {
+            communityId: communityName,
+            isModerator: true,
+          }
+        );
       });
     } catch (error: any) {
-      console.log(error.message)
-      setNameError(error.message)
-
+      console.log(error.message);
+      setNameError(error.message);
     }
-
-    setLoading(false)
+    setLoading(false);
   };
-  
+
   return (
     <>
       <Modal isOpen={open} onClose={handleClose} size="lg">
@@ -217,7 +230,11 @@ const CreateCommunityModal: FC<ICreateCommunityModalProps> = ({
             <Button variant="outline" h="30px" mr={3} onClick={handleClose}>
               Cancel
             </Button>
-            <Button h="30px" isLoading={loading} onClick={handleCreateCommunity}>
+            <Button
+              h="30px"
+              isLoading={loading}
+              onClick={handleCreateCommunity}
+            >
               Create Community
             </Button>
           </ModalFooter>
