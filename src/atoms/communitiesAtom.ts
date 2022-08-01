@@ -9,3 +9,22 @@ export type Community = {
   createdAt?: Timestamp;
   imageURL?: string;
 }
+
+export type CommunitySnippet ={
+  communityId: string;
+  isModerator?: boolean;
+  imageURL?: string;
+}
+
+type CommunityState = {
+  mySnippets: CommunitySnippet[];
+}
+
+const defaultCommunityState: CommunityState= {
+  mySnippets: [],
+}
+
+export const communityState = atom<CommunityState>({
+  key: "communitiesState",
+  default: defaultCommunityState,
+});
