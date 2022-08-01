@@ -1,5 +1,13 @@
-import { ChangeEvent, FC, useState } from "react";
-import { Box, Flex, Icon, Text } from "@chakra-ui/react";
+import { ChangeEvent, FC, useEffect, useState } from "react";
+import {
+  Alert,
+  AlertIcon,
+  AlertTitle,
+  Box,
+  Flex,
+  Icon,
+  Text,
+} from "@chakra-ui/react";
 import { IoDocumentText, IoImageOutline } from "react-icons/io5";
 import { BsLink45Deg, BsMic } from "react-icons/bs";
 import { BiPoll } from "react-icons/bi";
@@ -13,7 +21,7 @@ import {
   collection,
   serverTimestamp,
   Timestamp,
-  updateDoc
+  updateDoc,
 } from "firebase/firestore";
 import { firestore, storage } from "../../firebase/clientApp";
 import { getDownloadURL, ref, uploadString } from "firebase/storage";
@@ -47,7 +55,7 @@ export type TabItem = {
 };
 
 interface INewPoetForm {
-  user: User
+  user: User;
 }
 
 const NewPostForm: FC<INewPoetForm> = ({ user }) => {
@@ -63,7 +71,7 @@ const NewPostForm: FC<INewPoetForm> = ({ user }) => {
 
   const handleCreatePost = async () => {
     const { communityId } = router.query;
-    setLoading(true)
+    setLoading(true);
     try {
       const postDocRef = await addDoc(collection(firestore, "posts"), {
         communityId: communityId as string,
@@ -83,11 +91,12 @@ const NewPostForm: FC<INewPoetForm> = ({ user }) => {
           imageURL: downloadURL,
         });
       }
+      router.back();
     } catch (error) {
-      console.log(error)
-      setError("Error creating post")
+      console.log(error);
+      setError("Error creating post");
     }
-    setLoading(false)
+    setLoading(false);
   };
 
   const handleSelectImage = (event: ChangeEvent<HTMLInputElement>) => {
@@ -113,6 +122,15 @@ const NewPostForm: FC<INewPoetForm> = ({ user }) => {
       [name]: value,
     }));
   };
+
+  useEffect(() => {
+    if (!error) return
+    const timer = setTimeout(() => {
+      setError("");
+    }, 4000);
+
+    return () => clearTimeout(timer);
+  }, [error]);
 
   return (
     <Flex direction="column" mt={2} borderRadius={4} bg="white">
@@ -149,6 +167,12 @@ const NewPostForm: FC<INewPoetForm> = ({ user }) => {
           </Box>
         )}
       </Flex>
+      {error && (
+        <Alert status="error">
+          <AlertIcon />
+          <AlertTitle>{error}</AlertTitle>
+        </Alert>
+      )}
     </Flex>
   );
 };

@@ -28,7 +28,7 @@ const CreatePostLink: FC = () => {
       h="56px"
       justify="space-evenly"
       borderRadius={4}
-      p={2}
+      py={2}
       mb={4}
       border="1px solid"
       borderColor="gray.300"

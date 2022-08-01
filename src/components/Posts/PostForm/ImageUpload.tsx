@@ -23,7 +23,6 @@ const ImageUpload: FC<IImageUploadProps> = ({
     <Flex justify="center" align="center" direction="column" w="100%">
       {selectedFile ? (
         <>
-          {/* <video src={selectedFile} autoPlay /> */}
           <Image src={selectedFile} alt="photo" maxW="400px" maxH="400px" />
           <Flex gap={3} py={4}>
             <Button
