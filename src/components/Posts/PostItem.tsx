@@ -28,7 +28,7 @@ interface IPostItemProps {
   post: Post;
   userIsCreator: boolean;
   userVoteValue?: number;
-  onVote: () => {};
+  onVote: (post: Post, vote: number, communityId: string) => void;
   onDeletePost: (post: Post) => Promise<boolean>;
   onSelectPost: () => void;
 }
@@ -94,7 +94,7 @@ const PostItem: FC<IPostItemProps> = ({
           fontSize={22}
           cursor="pointer"
           color={userVoteValue === 1 ? "brand.100" : "gray.400"}
-          onClick={onVote}
+          onClick={() => onVote(post, 1, post.communityId)}
         />
         <Text fontSize="9pt">{post.voteStatus}</Text>
         <Icon
@@ -106,7 +106,7 @@ const PostItem: FC<IPostItemProps> = ({
           fontSize={22}
           cursor="pointer"
           color={userVoteValue === -1 ? "#4379ff" : "gray.400"}
-          onClick={onVote}
+          onClick={() => onVote(post, -1, post.communityId)}
         />
       </Flex>
       <Flex direction="column" w="100%">
@@ -135,7 +135,7 @@ const PostItem: FC<IPostItemProps> = ({
             </Flex>
           )}
         </Stack>
-        <Flex m="0 0 12px 20px" color="gray.500" fontWeight={600}>
+        <Flex m="0 0 12px 20px" color="gray.500" fontWeight={600} flexWrap="wrap">
           <Flex
             align="center"
             p="8px 10px"

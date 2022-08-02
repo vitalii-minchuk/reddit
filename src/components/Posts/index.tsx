@@ -56,12 +56,14 @@ const Posts: FC<IPostsProps> = ({ communityData }) => {
         <PostLoader />
       ) : (
         <Stack>
-          {postStateValue.posts.map((post) => (
+          {postStateValue.posts.map((item) => (
             <PostItem
-              key={post.id}
-              userIsCreator={user?.uid === post.creatorId}
-              userVoteValue={undefined}
-              post={post}
+              key={item.id}
+              userIsCreator={user?.uid === item.creatorId}
+              userVoteValue={
+                postStateValue.postVotes.find((vote) => vote.postId === item.id)?.voteValue
+              }
+              post={item}
               onDeletePost={onDeletePost}
               onSelectPost={onSelectPost}
               onVote={onVote}

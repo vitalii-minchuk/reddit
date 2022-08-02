@@ -17,7 +17,7 @@ import { MdOutlineLogin } from "react-icons/md";
 import { ChevronDownIcon } from "@chakra-ui/icons";
 import { signOut, User } from "firebase/auth";
 import { auth } from "../../../firebase/clientApp";
-import { useResetRecoilState, useSetRecoilState } from "recoil";
+import { useSetRecoilState } from "recoil";
 import { authModalState } from "../../../atoms/authModalAtom";
 import { communityState } from "../../../atoms/communitiesAtom";
 
@@ -27,11 +27,11 @@ interface IUserMenuProps {
 
 const UserMenu: FC<IUserMenuProps> = ({ user }) => {
   const setAuthModalState = useSetRecoilState(authModalState);
-  const resetCommunityState = useResetRecoilState(communityState)
+  // const resetCommunityState = useResetRecoilState(communityState)
 
   const handleSignOut = async () => {
     await signOut(auth);
-    resetCommunityState();
+    // resetCommunityState();
   }
   return (
     <Menu>
