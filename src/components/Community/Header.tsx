@@ -8,18 +8,30 @@ interface IHeaderProps {
   communityData: Community;
 }
 const Header: FC<IHeaderProps> = ({ communityData }) => {
-  const { communityStateValue, onJoinOrLeaveCommunity, loading } = useCommunityData();
-  const isJoined = Boolean(communityStateValue.mySnippets.find(
-    (item) => item.communityId === communityData.id
-  ));
+  const { communityStateValue, onJoinOrLeaveCommunity, loading } =
+    useCommunityData();
+  const isJoined = Boolean(
+    communityStateValue.mySnippets.find(
+      (item) => item.communityId === communityData.id
+    )
+  );
 
   return (
     <Flex direction="column" h="146px" w="100%">
       <Box h="50%" bg="blue.400" />
       <Flex justify="center" flexGrow={1} bg="white">
         <Flex width="95%" maxW="860px">
-          {communityData.imageURL ? (
-            <Image />
+          {communityStateValue.currentCommunity?.imageURL ? (
+            <Image
+              borderRadius="full"
+              boxSize="66px"
+              position="relative"
+              top={-3}
+              objectFit="cover"
+              border="4px solid white"
+              src={communityStateValue.currentCommunity.imageURL}
+              alt="community image"
+            />
           ) : (
             <Icon
               as={FaReddit}

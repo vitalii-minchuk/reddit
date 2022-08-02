@@ -4,9 +4,13 @@ import PageContent from "../../../components/Layout/PageContent";
 import NewPostForm from "../../../components/Posts/NewPostForm";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "../../../firebase/clientApp";
+import { useRecoilValue } from "recoil";
+import { communityState } from "../../../atoms/communitiesAtom";
 
 const SubmitPostPage: FC = () => {
   const [user] = useAuthState(auth);
+  const communityStateValue = useRecoilValue(communityState);
+ 
   return (
     <PageContent>
       <>
@@ -15,7 +19,9 @@ const SubmitPostPage: FC = () => {
         </Box>
         {user && <NewPostForm user={user} />}
       </>
-      <>hello</>
+      <>
+        {/* <About /> */}
+      </>
     </PageContent>
   );
 };

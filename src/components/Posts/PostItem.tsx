@@ -1,9 +1,13 @@
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import {
+  Alert,
+  AlertIcon,
+  AlertTitle,
   Flex,
   Icon,
   Image,
   Skeleton,
+  Spinner,
   Stack,
   Text,
 } from "@chakra-ui/react";
@@ -25,7 +29,7 @@ interface IPostItemProps {
   userIsCreator: boolean;
   userVoteValue?: number;
   onVote: () => {};
-  onDeletePost: () => {};
+  onDeletePost: (post: Post) => Promise<boolean>;
   onSelectPost: () => void;
 }
 const PostItem: FC<IPostItemProps> = ({
@@ -37,6 +41,32 @@ const PostItem: FC<IPostItemProps> = ({
   userVoteValue,
 }) => {
   const [loadingImage, setLoadingImage] = useState(true);
+  const [error, setError] = useState("");
+  const [loadingDelete, setLoadingDelete] = useState(false);
+
+  const handleDelete = async () => {
+    setLoadingDelete(true);
+    try {
+      const success = await onDeletePost(post);
+      if (!success) {
+        throw new Error("Failed to delete post");
+      }
+    } catch (error: any) {
+      console.log("handleDelete", error);
+      setError(error.message);
+    }
+    setLoadingDelete(false);
+  };
+
+  useEffect(() => {
+    if (!error) return
+    const timer = setTimeout(() => {
+      setError("");
+    }, 4000);
+
+    return () => clearTimeout(timer);
+  }, [error]);
+
   return (
     <Flex
       bg="white"
@@ -144,15 +174,25 @@ const PostItem: FC<IPostItemProps> = ({
               transition="all .3s"
               _hover={{ bg: "gray.200" }}
               cursor="pointer"
-              onClick={onDeletePost}
+              onClick={handleDelete}
             >
-              <>
-                <Icon as={AiOutlineDelete} mr={2} />
-                <Text fontSize="9pt">Delete</Text>
-              </>
+              {loadingDelete ? (
+                <Spinner size="sm" />
+              ) : (
+                <>
+                  <Icon as={AiOutlineDelete} mr={2} />
+                  <Text fontSize="9pt">Delete</Text>
+                </>
+              )}
             </Flex>
           )}
         </Flex>
+        {error && (
+          <Alert status="error" borderBottomRightRadius={4}>
+            <AlertIcon />
+            <AlertTitle>{error}</AlertTitle>
+          </Alert>
+        )}
       </Flex>
     </Flex>
   );

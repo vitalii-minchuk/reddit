@@ -18,6 +18,7 @@ export type CommunitySnippet ={
 
 type CommunityState = {
   mySnippets: CommunitySnippet[];
+  currentCommunity?: Community;
 }
 
 const defaultCommunityState: CommunityState= {

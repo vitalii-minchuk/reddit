@@ -25,6 +25,7 @@ import {
 } from "firebase/firestore";
 import { firestore, storage } from "../../firebase/clientApp";
 import { getDownloadURL, ref, uploadString } from "firebase/storage";
+import useSelectFile from "../../hooks/useSelectFile";
 
 const formTabs = [
   {
@@ -61,13 +62,13 @@ interface INewPoetForm {
 const NewPostForm: FC<INewPoetForm> = ({ user }) => {
   const router = useRouter();
   const [selectedTab, setSelectedTab] = useState(formTabs[0].title);
-  const [selectedFile, setSelectedFile] = useState<string>();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [textInputs, setTextInputs] = useState({
     title: "",
     body: "",
   });
+  const { setSelectedFile, handleSelectImage, selectedFile } = useSelectFile();
 
   const handleCreatePost = async () => {
     const { communityId } = router.query;
@@ -97,18 +98,6 @@ const NewPostForm: FC<INewPoetForm> = ({ user }) => {
       setError("Error creating post");
     }
     setLoading(false);
-  };
-
-  const handleSelectImage = (event: ChangeEvent<HTMLInputElement>) => {
-    const reader = new FileReader();
-    if (event.target.files?.[0]) {
-      reader.readAsDataURL(event.target.files[0]);
-    }
-    reader.onload = (readerEvent) => {
-      if (readerEvent.target?.result) {
-        setSelectedFile(readerEvent.target.result as string);
-      }
-    };
   };
 
   const handleTextChange = (

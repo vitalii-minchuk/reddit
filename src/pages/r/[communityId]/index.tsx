@@ -1,21 +1,30 @@
-import { FC } from "react";
+import { FC, useEffect } from "react";
 import { GetServerSidePropsContext } from "next";
 import { doc, getDoc } from "firebase/firestore";
-import { auth, firestore } from "../../../firebase/clientApp";
-import { Community } from "../../../atoms/communitiesAtom";
+import { firestore } from "../../../firebase/clientApp";
+import { Community, communityState } from "../../../atoms/communitiesAtom";
 import safeJsonStringify from "safe-json-stringify";
-import { Flex } from "@chakra-ui/react";
 import CommunityNotFound from "../../../components/Community/CommunityNotFound";
 import Header from "../../../components/Community/Header";
 import PageContent from "../../../components/Layout/PageContent";
 import CreatePostLink from "../../../components/Community/CreatePostLink";
 import Posts from "../../../components/Posts";
+import { useSetRecoilState } from "recoil";
+import About from "../../../components/Community/About";
 
 interface ICommunityPageProps {
   communityData: Community;
 }
 
 const CommunityPage: FC<ICommunityPageProps> = ({ communityData }) => {
+  const setCommunityStateValue = useSetRecoilState(communityState);
+
+  useEffect(() => {
+    setCommunityStateValue((prev) => ({
+      ...prev,
+      currentCommunity: communityData,
+    }));
+  }, [communityData, setCommunityStateValue]);
 
   if (!communityData) {
     return <CommunityNotFound />;
@@ -29,7 +38,9 @@ const CommunityPage: FC<ICommunityPageProps> = ({ communityData }) => {
           <CreatePostLink />
           <Posts communityData={communityData} />
         </>
-        <>fffff</>
+        <>
+          <About communityData={communityData} />
+        </>
       </PageContent>
     </>
   );
