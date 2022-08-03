@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, MouseEvent, useEffect, useState } from "react";
 import {
   Alert,
   AlertIcon,
@@ -23,14 +23,20 @@ import {
 import moment from "moment";
 import { BsChat } from "react-icons/bs";
 import { AiOutlineDelete } from "react-icons/ai";
+import { useRouter } from "next/router";
 
 interface IPostItemProps {
   post: Post;
   userIsCreator: boolean;
   userVoteValue?: number;
-  onVote: (post: Post, vote: number, communityId: string) => void;
+  onVote: (
+    post: Post,
+    vote: number,
+    communityId: string,
+    event: MouseEvent<HTMLOrSVGElement>
+  ) => void;
   onDeletePost: (post: Post) => Promise<boolean>;
-  onSelectPost: () => void;
+  onSelectPost?: (post: Post) => void;
 }
 const PostItem: FC<IPostItemProps> = ({
   post,
@@ -43,13 +49,19 @@ const PostItem: FC<IPostItemProps> = ({
   const [loadingImage, setLoadingImage] = useState(true);
   const [error, setError] = useState("");
   const [loadingDelete, setLoadingDelete] = useState(false);
+  const router = useRouter()
+  const singlePostPage = !onSelectPost;
 
-  const handleDelete = async () => {
+  const handleDelete = async (event: MouseEvent<HTMLDivElement>) => {
+    event.stopPropagation()
     setLoadingDelete(true);
     try {
       const success = await onDeletePost(post);
       if (!success) {
         throw new Error("Failed to delete post");
+      }
+      if (singlePostPage) {
+        router.push(`/r/${post.communityId}`);
       }
     } catch (error: any) {
       console.log("handleDelete", error);
@@ -59,7 +71,7 @@ const PostItem: FC<IPostItemProps> = ({
   };
 
   useEffect(() => {
-    if (!error) return
+    if (!error) return;
     const timer = setTimeout(() => {
       setError("");
     }, 4000);
@@ -71,21 +83,20 @@ const PostItem: FC<IPostItemProps> = ({
     <Flex
       bg="white"
       border="1px solid"
-      borderColor="gray.300"
-      borderRadius={4}
-      mb={2}
-      cursor="pointer"
+      borderColor={singlePostPage ? "white" : "gray.300"}
+      borderRadius={singlePostPage ? "4px 4px 0 0" : 4}
+      cursor={singlePostPage ? "unset" : "pointer"}
       transition="all .3s"
-      _hover={{ borderColor: "gray.500" }}
-      onClick={onSelectPost}
+      _hover={{ borderColor: singlePostPage ? "none" : "gray.500" }}
+      onClick={() => onSelectPost && onSelectPost(post)}
     >
       <Flex
         direction="column"
         align="center"
-        bg="gray.100"
+        bg={singlePostPage ? "none" : "gray.100"}
         p={2}
         w="40px"
-        borderRadius={4}
+        borderRadius={singlePostPage ? "0" : "3px 0 0 3px"}
       >
         <Icon
           as={
@@ -94,7 +105,7 @@ const PostItem: FC<IPostItemProps> = ({
           fontSize={22}
           cursor="pointer"
           color={userVoteValue === 1 ? "brand.100" : "gray.400"}
-          onClick={() => onVote(post, 1, post.communityId)}
+          onClick={(event) => onVote(post, 1, post.communityId, event)}
         />
         <Text fontSize="9pt">{post.voteStatus}</Text>
         <Icon
@@ -106,7 +117,7 @@ const PostItem: FC<IPostItemProps> = ({
           fontSize={22}
           cursor="pointer"
           color={userVoteValue === -1 ? "#4379ff" : "gray.400"}
-          onClick={() => onVote(post, -1, post.communityId)}
+          onClick={(event) => onVote(post, -1, post.communityId, event)}
         />
       </Flex>
       <Flex direction="column" w="100%">
@@ -135,7 +146,12 @@ const PostItem: FC<IPostItemProps> = ({
             </Flex>
           )}
         </Stack>
-        <Flex m="0 0 12px 20px" color="gray.500" fontWeight={600} flexWrap="wrap">
+        <Flex
+          m="0 0 12px 20px"
+          color="gray.500"
+          fontWeight={600}
+          flexWrap="wrap"
+        >
           <Flex
             align="center"
             p="8px 10px"
