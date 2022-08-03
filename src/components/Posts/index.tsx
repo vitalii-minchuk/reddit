@@ -48,7 +48,7 @@ const Posts: FC<IPostsProps> = ({ communityData }) => {
 
   useEffect(() => {
     getPosts();
-  }, [getPosts]);
+  }, [getPosts, communityData]);
 
   return (
     <>

@@ -6,14 +6,23 @@ import { User } from "firebase/auth";
 import SearchInput from "./SearchInput";
 import RightContent from "./RightContent";
 import Directory from "./Directory";
+import useDirectory from "../../hooks/useDirectory";
+import { defaultMenuItem } from "../../atoms/directoryMenuAtom";
 
 const Navbar: FC = () => {
   const [user, loading, error] = useAuthState(auth);
+  const { onSelectMenuItem } = useDirectory();
 
   return (
     <Flex bg="white" h="44px" p="6px 12px" justify="space-between">
-      <Flex align="center" minW="24px" mr={{base: 1, md: 2}}>
-        <Image h="24px"  src="/images/redditFace.svg" alt="reddit face" />
+      <Flex
+        cursor="pointer"
+        align="center"
+        minW="24px"
+        mr={{ base: 1, md: 2 }}
+        onClick={() => onSelectMenuItem(defaultMenuItem)}
+      >
+        <Image h="24px" src="/images/redditFace.svg" alt="reddit face" />
         <Image
           h="46px"
           src="/images/redditText.svg"

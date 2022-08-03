@@ -8,18 +8,24 @@ import { useRouter } from "next/router";
 import { useSetRecoilState } from "recoil";
 import { authModalState } from "../../atoms/authModalAtom";
 import { auth } from "../../firebase/clientApp";
+import useDirectory from "../../hooks/useDirectory";
 
 const CreatePostLink: FC = () => {
   const setAuthModalState = useSetRecoilState(authModalState);
+  const { toggleMenuOpen } = useDirectory();
   const [user] = useAuthState(auth);
   const router = useRouter();
 
   const handleClick = () => {
     if (!user) {
-      setAuthModalState({open: true, view: "signIn"})
+      setAuthModalState({ open: true, view: "signIn" });
     }
     const { communityId } = router.query;
-    router.push(`/r/${router.query.communityId}/submit`);
+    if (communityId) {
+      router.push(`/r/${communityId}/submit`);
+      return;
+    }
+    toggleMenuOpen();
   };
   return (
     <Flex
