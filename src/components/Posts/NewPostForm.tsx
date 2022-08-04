@@ -57,9 +57,10 @@ export type TabItem = {
 
 interface INewPoetForm {
   user: User;
+  communityImageURL?: string
 }
 
-const NewPostForm: FC<INewPoetForm> = ({ user }) => {
+const NewPostForm: FC<INewPoetForm> = ({ user, communityImageURL }) => {
   const router = useRouter();
   const [selectedTab, setSelectedTab] = useState(formTabs[0].title);
   const [loading, setLoading] = useState(false);
@@ -76,6 +77,7 @@ const NewPostForm: FC<INewPoetForm> = ({ user }) => {
     try {
       const postDocRef = await addDoc(collection(firestore, "posts"), {
         communityId: communityId as string,
+        communityImageURL: communityImageURL || "",
         creatorId: user.uid,
         creatorDisplayName: user.email!.split("@")[0],
         body: textInputs.body,

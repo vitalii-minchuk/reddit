@@ -29,6 +29,8 @@ import {
 } from "firebase/firestore";
 import { auth, firestore } from "../../../firebase/clientApp";
 import { useAuthState } from "react-firebase-hooks/auth";
+import { useRouter } from "next/router";
+import useDirectory from "../../../hooks/useDirectory";
 
 enum ComType {
   public = "public",
@@ -51,6 +53,8 @@ const CreateCommunityModal: FC<ICreateCommunityModalProps> = ({
   const [charsRemaining, setCharsRemaining] = useState(21);
   const [nameError, setNameError] = useState("");
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
+  const { toggleMenuOpen } = useDirectory();
 
   useEffect(() => {
     setCommunityName("");
@@ -99,6 +103,9 @@ const CreateCommunityModal: FC<ICreateCommunityModalProps> = ({
           }
         );
       });
+      handleClose();
+      toggleMenuOpen();
+      router.push(`r/${communityName}`);
     } catch (error: any) {
       console.log(error.message);
       setNameError(error.message);

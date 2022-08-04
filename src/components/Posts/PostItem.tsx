@@ -24,6 +24,9 @@ import moment from "moment";
 import { BsChat } from "react-icons/bs";
 import { AiOutlineDelete } from "react-icons/ai";
 import { useRouter } from "next/router";
+import { FaReddit } from "react-icons/fa";
+import { BsDot } from "react-icons/bs";
+import Link from "next/link";
 
 interface IPostItemProps {
   post: Post;
@@ -37,6 +40,7 @@ interface IPostItemProps {
   ) => void;
   onDeletePost: (post: Post) => Promise<boolean>;
   onSelectPost?: (post: Post) => void;
+  homePage?: boolean;
 }
 const PostItem: FC<IPostItemProps> = ({
   post,
@@ -45,15 +49,16 @@ const PostItem: FC<IPostItemProps> = ({
   onDeletePost,
   onSelectPost,
   userVoteValue,
+  homePage,
 }) => {
   const [loadingImage, setLoadingImage] = useState(true);
   const [error, setError] = useState("");
   const [loadingDelete, setLoadingDelete] = useState(false);
-  const router = useRouter()
+  const router = useRouter();
   const singlePostPage = !onSelectPost;
 
   const handleDelete = async (event: MouseEvent<HTMLDivElement>) => {
-    event.stopPropagation()
+    event.stopPropagation();
     setLoadingDelete(true);
     try {
       const success = await onDeletePost(post);
@@ -123,7 +128,30 @@ const PostItem: FC<IPostItemProps> = ({
       <Flex direction="column" w="100%">
         <Stack spacing={1} p="10pt">
           <Flex gap={1} align="center" fontSize="9pt">
-            {}
+            {homePage && (
+              <>
+                {post?.communityImageURL ? (
+                  <Image
+                    borderRadius="full"
+                    boxSize="18px"
+                    src={post.communityImageURL}
+                    alt="community image"
+                  />
+                ) : (
+                  <Icon as={FaReddit} fontSize="18pt" mr={1} color="blue.500" />
+                )}
+                <Link href={`r/${post.communityId}`}>
+                  <Text
+                    fontWeight={700}
+                    _hover={{ textDecoration: "underline" }}
+                    onClick={(event) => event.stopPropagation()}
+                  >
+                    {`r/${post.communityId}`}
+                  </Text>
+                </Link>
+                <Icon as={BsDot} color="gray.500" fontSize={8} />
+              </>
+            )}
             <Text>
               Posted by u/{post.creatorDisplayName},{" "}
               {moment(new Date(post.createdAt?.seconds * 1000)).fromNow()}

@@ -171,7 +171,7 @@ const Comments: FC<ICommentsProps> = ({ communityId, user, post }) => {
                     key={comment.id}
                     handleDeleteComment={handleDeleteComment}
                     comment={comment}
-                    userId={user.uid}
+                    userId={user?.uid}
                     deleteLoading={deleteLoadingId === comment.id}
                   />
                 ))}
