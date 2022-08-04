@@ -19,7 +19,6 @@ import { signOut, User } from "firebase/auth";
 import { auth } from "../../../firebase/clientApp";
 import { useSetRecoilState } from "recoil";
 import { authModalState } from "../../../atoms/authModalAtom";
-import { communityState } from "../../../atoms/communitiesAtom";
 
 interface IUserMenuProps {
   user: User;
@@ -27,11 +26,9 @@ interface IUserMenuProps {
 
 const UserMenu: FC<IUserMenuProps> = ({ user }) => {
   const setAuthModalState = useSetRecoilState(authModalState);
-  // const resetCommunityState = useResetRecoilState(communityState)
 
   const handleSignOut = async () => {
     await signOut(auth);
-    // resetCommunityState();
   }
   return (
     <Menu>
