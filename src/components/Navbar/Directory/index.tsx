@@ -52,6 +52,10 @@ const Directory: FC = () => {
               display={{ base: "none", md: "unset" }}
               fontWeight={700}
               fontSize="10pt"
+              whiteSpace="nowrap"
+              overflow="hidden"
+              textOverflow="ellipsis"
+              width="65%"
             >
               {directoryState.selectedMenuItem.displayText}
             </Text>

@@ -119,7 +119,7 @@ const About: FC<IAboutProps> = ({ communityData }) => {
                   />
                   {communityData.imageURL || selectedFile ? (
                     <Image
-                      borderRadius={4}
+                      borderRadius="full"
                       boxSize="40px"
                       src={selectedFile || communityData.imageURL}
                       alt="community image"
